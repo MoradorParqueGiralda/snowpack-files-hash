@@ -20,8 +20,32 @@ class Files {
         let hashMap = await this._getFilesToHash();
         hashMap = await this._buildHashes(hashMap);
         await this._sourcesReplace(hashMap);
+        await this._rewriteImportMap(hashMap);
 
         fs.writeFileSync(path.join(this.buildDirectory, "assets-hashmap.json"), JSON.stringify(hashMap, null, 2), "utf8");
+    }
+
+    /**
+     * @method  _rewriteImportMap
+     *
+     * @param {{[index:string]: {[index:string]: string}}} hashMap
+     */
+    async _rewriteImportMap(hashMap) {
+        if (!fs.existsSync(path.join(this.modulesDir, "import-map.json"))) {
+            return;
+        }
+
+        const importMap = JSON.parse(fs.readFileSync(path.join(this.modulesDir, "import-map.json"), "utf8"));
+        for (const importFile in importMap.imports) {
+            const absolutPath = path.join(this.modulesDir, importMap.imports[importFile]);
+            const relativePath = this._normalizePath(path.relative(this.buildDirectory, absolutPath));
+
+            if (hashMap?.js[relativePath]) {
+                importMap.imports[importFile] = hashMap.js[relativePath];
+            }
+        }
+
+        fs.writeFileSync(path.join(this.modulesDir, "import-map.json"), JSON.stringify(importMap, null, 2));
     }
 
     /**
@@ -82,7 +106,7 @@ class Files {
      */
     async _buildHashes(hashMap) {
         for (const ext in hashMap) {
-            if (ext === "js") {
+            if (ext === "js" || ext === "mjs") {
                 continue;
             }
 
@@ -95,15 +119,19 @@ class Files {
             }
         }
 
-        if (hashMap.js) {
-            this.log(`Hashing .js files...`);
+        for (const ext in hashMap) {
+            if (ext !== "js" && ext !== "mjs") {
+                continue;
+            }
+
+            this.log(`Hashing .${ext} files...`);
 
             // Obtenemos todos los arvhivos javasctip
-            const javasciptFiles = this._getFilesInPath(this.buildDirectory, true, "js");
+            const javasciptFiles = this._getFilesInPath(this.buildDirectory, true, ext);
 
-            for (const fileToHash in hashMap.js) {
+            for (const fileToHash in hashMap[ext]) {
                 // Si el archivo ya se a hasheado en alguna dependencia
-                if (hashMap.js[fileToHash]) {
+                if (hashMap[ext][fileToHash]) {
                     continue;
                 }
 
