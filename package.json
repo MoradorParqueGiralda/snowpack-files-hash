@@ -1,0 +1,12 @@
+{
+  "name": "snowpack-files-hash",
+  "version": "1.0.0",
+  "description": "Hash already built files for snowpack",
+  "main": "snowpack-files-hash.js",
+  "keywords": [
+    "snowpack",
+    "hash"
+  ],
+  "author": "Manu Overa",
+  "license": "ISC"
+}
