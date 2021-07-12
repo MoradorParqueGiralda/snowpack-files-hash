@@ -5,7 +5,7 @@ const { Files } = require("./files.js");
 function parseOptions(pluginOptions) {
     const defOptions = {
         baseUrl: "",
-        exclude: [],
+        exclude: ["snowpack.config.js"],
         searchImportsIn: ["html", "php", "js"],
         hashLength: 12,
         hashFiles: ["js", "css"], // css, js, svg, jpg, png...

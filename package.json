@@ -5,8 +5,14 @@
   "main": "snowpack-files-hash.js",
   "keywords": [
     "snowpack",
-    "hash"
+    "plugin",
+    "hash",
+    "content hashs"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/manujoz/snowpack-files-hash.git"
+  },
   "author": "Manu Overa",
   "license": "ISC"
 }
