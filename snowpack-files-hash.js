@@ -40,7 +40,9 @@ function getModulesDir(buildDirectory, log) {
     const base = ["_snowpack/pkg", "web_modules"];
     const possibles = config.buildOptions.metaUrlPath ? [config.buildOptions.metaUrlPath].concat(base) : base;
     for (const dir of possibles.map((d) => path.join(buildDirectory, d))) {
-        if (fs.existsSync(dir)) {
+        if (fs.existsSync(path.join(dir, "pkg"))) {
+            return path.join(dir, "pkg");
+        } else if (fs.existsSync(dir)) {
             return dir;
         }
     }
