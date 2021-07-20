@@ -18,23 +18,46 @@ function parseOptions(pluginOptions) {
     return defOptions;
 }
 
+let config;
+/**
+ * @#return { string } config.buildOptions.metaUrlPath or "_snowpack/pkg" in a backwards-compatible way.
+ * /
+function extractModDir() {
+    if (config.buildOptions.metaUrlPath)
+        return config.buildOptions.metaUrlPath;
+    else
+        return "_snowpack/pkg";
+}*/
+
+/**
+ * this gets the webModules dir
+ *
+ * @param {string} buildDirectory
+ * @param {(message: string) => void} log
+ * @return { string | false } the module dir or false
+ */
 function getModulesDir(buildDirectory, log) {
-    const posibles = ["_snowpack/pkg", "web_modules"];
-    for (const dir of posibles.map((d) => path.join(buildDirectory, d))) {
+    const base = ["_snowpack/pkg", "web_modules"];
+    const possibles = config.buildOptions.metaUrlPath ? [config.buildOptions.metaUrlPath].concat(base) : base;
+    for (const dir of possibles.map((d) => path.join(buildDirectory, d))) {
         if (fs.existsSync(dir)) {
             return dir;
         }
     }
-
-    log(`Could not find the path to the modules directory. Possibles ["_snowpack/pkg", "web_modules"]`);
+    log(`Could not find the path to the modules directory. Possibles ["${possibles.join('", "')}"]`);
     return false;
 }
-
-module.exports = (snowpackConfig, pluginOptions) => {
+/**
+ * @type { import("snowpack").SnowpackPluginFactory }
+ */
+module.exports = (_SnowpackConfig, pluginOptions) => {
     const options = parseOptions(pluginOptions);
 
     return {
         name: "snowpack-files-hash",
+        config(snowpackConfig) {
+            config = snowpackConfig;
+        },
         async optimize({ buildDirectory, log }) {
             const modulesDir = getModulesDir(buildDirectory, log);
             if (!modulesDir) {
