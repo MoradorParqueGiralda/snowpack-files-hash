@@ -186,14 +186,14 @@ class Files {
         }
 
         // Buscamos las dependencias
-        const importExpr = /import((\s+)?{?[A-z0-9\.\/\-_\s\,]+}?(\s+)?)?(\s+)?(from)?(\s+)?([\"\'\`]([A-z0-9\.\/\-_@%#?+]+)[\"\'\`])/g;
+        const importExpr = /(import\([\"\'\`]([A-z0-9\.\/\-_@%#?+]+)[\"\'\`]\))|import((\s+)?{?[A-z0-9\.\/\-_\s\,]+}?(\s+)?|\s+?\*\sas\s[A-z0-9\.\/\-_]+\s+?)?(\s+)?(from)?(\s+)?([\"\'\`]([A-z0-9\.\/\-_@%#?+]+)[\"\'\`])/g;
         const matches = content.matchAll(importExpr);
 
         let hasDependencies = false;
         for (const match of matches) {
             hasDependencies = true;
             const importStatment = match[0];
-            const importedSrc = match[8];
+            const importedSrc = match[10] || match[2];
 
             // Obtenemos la ruta al importado y el relativo al importado
             const pathToImportedSrc = path.join(path.parse(pathToFile).dir, importedSrc);
@@ -439,12 +439,12 @@ class Files {
      * @param {{[index:string]: {[index:string]: string}}} hashMap
      */
     _replaceJsImportExpr(file, content, hashMap) {
-        const importExpr = /import((\s+)?{?[A-z0-9\.\/\-_\s\,]+}?(\s+)?)?(\s+)?(from)?(\s+)?([\"\'\`]([A-z0-9\.\/\-_@%#?+]+)[\"\'\`])/g;
+        const importExpr = /(import\([\"\'\`]([A-z0-9\.\/\-_@%#?+]+)[\"\'\`]\))|import((\s+)?{?[A-z0-9\.\/\-_\s\,]+}?(\s+)?|\s+?\*\sas\s[A-z0-9\.\/\-_]+\s+?)?(\s+)?(from)?(\s+)?([\"\'\`]([A-z0-9\.\/\-_@%#?+]+)[\"\'\`])/g;
         const matches = content.matchAll(importExpr);
 
         for (const match of matches) {
             const src = match[0];
-            const pathSrc = match[8];
+            const pathSrc = match[10] || match[2];
 
             const parseFile = path.parse(file);
             let absolutePath = "";
