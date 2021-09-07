@@ -1,18 +1,27 @@
 {
   "name": "snowpack-files-hash",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Hash already built files for snowpack",
   "main": "snowpack-files-hash.js",
   "keywords": [
     "snowpack",
     "plugin",
     "hash",
-    "content hashs"
+    "content hash"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/manujoz/snowpack-files-hash.git"
   },
   "author": "Manu Overa",
-  "license": "ISC"
+  "peerDependencies": {
+    "snowpack": "^3"
+  },
+  "contributors": [
+    "not_existing"
+  ],
+  "license": "ISC",
+  "devDependencies": {
+    "snowpack": "^3.8.2"
+  }
 }
